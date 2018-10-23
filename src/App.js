@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import './App.css';
+import './index.css';
 import RoomList from './components/RoomList.js';
 import * as firebase from 'firebase';
+import MessageList from './components/MessageList.js';
 
   // Initialize Firebase
   var config = {
@@ -16,16 +17,44 @@ import * as firebase from 'firebase';
 
  
 class App extends Component {
+ constructor (props){
+    super(props);
+
+     this.state = {
+      activeRoomName: 'room1',
+      activeRoomId: '1'
+    };
+  }
+
+   activeRoomView = (newActiveRoomId, newActiveRoomName) => {
+    this.setState({
+      activeRoomId: newActiveRoomId,
+      activeRoomName: newActiveRoomName
+    });
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">Bloc Chat React</h1>
-        </header>
-        <section>
-        <RoomList
-          firebase={firebase}
-        />
+      <div className="app">
+        <sidebar className="sidebar">
+          <header className="header">
+            <h1 className="title">Bloc Chat</h1>
+          </header>
+          <RoomList
+            firebase={firebase}
+            className="roomList"
+            activeRoomName={this.state.activeRoomName}
+            activeRoomId={this.state.activeRoomId}
+            activeRoomView={this.activeRoomView}
+          />
+        </sidebar>
+        <section className="messageList">
+          <MessageList
+            firebase={firebase}
+            activeRoomName={this.state.activeRoomName}
+            activeRoomId={this.state.activeRoomId}
+            activeRoomView={this.activeRoomView}
+          />
         </section>
       </div>
     );

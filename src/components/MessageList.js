@@ -1,27 +1,19 @@
 import React, { Component } from 'react';
 
- class RoomList extends Component {
+class RoomList extends Component {
   constructor (props) {
     super(props);
 
-     this.state = {
+    this.state = {
       rooms: [],
       newRoomName: ''
     };
 
-     this.roomsRef = this.props.firebase.database().ref('rooms');
-  }
-  createRoom(event) {
-      event.preventDefault();
-    if (!this.state.newRoomName) { return }
-    this.roomsRef.push({ name: this.state.newRoomName });
-    this.setState({ newRoomName: '' });
-    }
-      handleChange(event) {
-    this.setState({newRoomName: event.target.value});
+    this.roomsRef = this.props.firebase.database().ref('rooms');
   }
 
-   componentDidMount() {
+  //Fetch rooms from the database
+  componentDidMount() {
     this.roomsRef.on('child_added', snapshot => {
       const room = snapshot.val();
       room.key = snapshot.key;
@@ -29,7 +21,22 @@ import React, { Component } from 'react';
     });
   }
 
-    handleClick(event) {
+  //Controlled Component, keep the React state as the 'single source of truth'
+  handleChange(event) {
+    this.setState({newRoomName: event.target.value});
+  }
+
+  //Create the new room in Firebase
+  //Prevent refresh
+  //Reset newRoomName
+  createRoom(event) {
+    event.preventDefault();
+    if (!this.state.newRoomName) { return }
+    this.roomsRef.push({ name: this.state.newRoomName });
+    this.setState({ newRoomName: '' });
+  }
+
+  handleClick(event) {
     let roomName = event.target.innerText;
     let roomId = '';
     this.roomsRef.orderByChild("name").equalTo(roomName).on('child_added', snapshot => {
@@ -37,12 +44,15 @@ import React, { Component } from 'react';
     });
     this.props.activeRoomView(roomId, roomName);
   }
-   render() {
+//Create a row for each room in the database
+//User input to create a new room in the database and render it
+//Handle clicks on room names
+  render() {
     return(
       <table id="room-list">
         <colgroup>
           <col id="room-name"/>
-                  </colgroup>
+        </colgroup>
         <tbody>
           {
             this.state.rooms.map( (room, index) =>
@@ -64,4 +74,5 @@ import React, { Component } from 'react';
     );
   }
 }
- export default RoomList;
+
+export default RoomList;
