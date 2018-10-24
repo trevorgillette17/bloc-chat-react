@@ -1,70 +1,70 @@
 import React, { Component } from 'react';
 
-class RoomList extends Component {
+class MessageList extends Component {
   constructor (props) {
     super(props);
 
     this.state = {
-      rooms: [],
-      newRoomName: ''
+      messages: [],
+      newMessagesName: ''
     };
 
-    this.roomsRef = this.props.firebase.database().ref('rooms');
+    this.messageRef = this.props.firebase.database().ref('messages');
   }
 
   //Fetch rooms from the database
   componentDidMount() {
-    this.roomsRef.on('child_added', snapshot => {
-      const room = snapshot.val();
-      room.key = snapshot.key;
-      this.setState({ rooms: this.state.rooms.concat( room ) });
+    this.messageRef.on('child_added', snapshot => {
+      const message = snapshot.val();
+      message.key = snapshot.key;
+      this.setState({ messages: this.state.messages.concat( message ) });
     });
   }
 
   //Controlled Component, keep the React state as the 'single source of truth'
   handleChange(event) {
-    this.setState({newRoomName: event.target.value});
+    this.setState({newMessageName: event.target.value});
   }
 
   //Create the new room in Firebase
   //Prevent refresh
   //Reset newRoomName
-  createRoom(event) {
+  createMessage(event) {
     event.preventDefault();
-    if (!this.state.newRoomName) { return }
-    this.roomsRef.push({ name: this.state.newRoomName });
-    this.setState({ newRoomName: '' });
+    if (!this.state.newMessageName) { return }
+    this.messageRef.push({ name: this.state.newMessageName });
+    this.setState({ newMessageName: '' });
   }
 
   handleClick(event) {
-    let roomName = event.target.innerText;
-    let roomId = '';
-    this.roomsRef.orderByChild("name").equalTo(roomName).on('child_added', snapshot => {
-      roomId = snapshot.key;
+    let messageName = event.target.innerText;
+    let messageId = '';
+    this.messageRef.orderByChild("name").equalTo(messageName).on('child_added', snapshot => {
+      messageId = snapshot.key;
     });
-    this.props.activeRoomView(roomId, roomName);
+    this.props.activeMessageView(messageId, messageName);
   }
 //Create a row for each room in the database
 //User input to create a new room in the database and render it
 //Handle clicks on room names
   render() {
     return(
-      <table id="room-list">
+      <table id="message-list">
         <colgroup>
-          <col id="room-name"/>
+          <col id="message-name"/>
         </colgroup>
         <tbody>
           {
-            this.state.rooms.map( (room, index) =>
-              <tr className="room" key={index} onClick= { (e) => this.handleClick(e) }>
-                <td>{room.name}</td>
+            this.state.messages.map( (message, index) =>
+              <tr className="message" key={index} onClick= { (e) => this.handleClick(e) }>
+                <td>{message.name}</td>
               </tr>
             )
           }
           <tr>
             <td>
-              <form onSubmit={ (e) => this.createRoom(e)}>
-                <input type="text" name="name" placeholder="New room name" value={this.state.newRoomName} onChange={ (e) => this.handleChange(e) } />
+              <form onSubmit={ (e) => this.createMessage(e)}>
+                <input type="text" name="name" placeholder="New message" value={this.state.newMessageName} onChange={ (e) => this.handleChange(e) } />
                 <input type="submit" value="Create" />
               </form>
             </td>
@@ -75,4 +75,4 @@ class RoomList extends Component {
   }
 }
 
-export default RoomList;
+export default MessageList;
