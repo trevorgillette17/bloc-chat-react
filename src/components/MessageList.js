@@ -17,7 +17,6 @@ class MessageList extends Component {
       const message = snapshot.val();
       message.key = snapshot.key;
       this.setState({ messages: this.state.messages.concat( message ) });
-      console.log(this.state.messages);
     });
   }
 
@@ -36,7 +35,7 @@ class MessageList extends Component {
           </tr>
         </thead>
           {
-            this.state.messages.filter( message => message.roomId == this.props.activeRoomId ).map( (message, index) =>
+            this.state.messages.filter( message => message.roomId === this.props.activeRoomId ).map( (message, index) =>
             <tbody>
               <tr key={index}>
                 <td className="username">{message.username}</td>

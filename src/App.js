@@ -1,38 +1,38 @@
 import React, { Component } from 'react';
 import './index.css';
 import RoomList from './components/RoomList.js';
-import * as firebase from 'firebase';
 import MessageList from './components/MessageList.js';
+import * as firebase from 'firebase';
 
-  // Initialize Firebase
-  var config = {
+// Initialize Firebase
+var config = {
     apiKey: "AIzaSyCi5BNEkSaPiBm0Nx4kNMg2CJD9Oz8j8l0",
     authDomain: "bloc-chat-3c62b.firebaseapp.com",
     databaseURL: "https://bloc-chat-3c62b.firebaseio.com",
     projectId: "bloc-chat-3c62b",
     storageBucket: "bloc-chat-3c62b.appspot.com",
     messagingSenderId: "732214085219"
-  };
-  firebase.initializeApp(config);
+};
 
- 
+firebase.initializeApp(config);
+
 class App extends Component {
- constructor (props){
+  constructor (props){
     super(props);
 
-     this.state = {
+    this.state = {
       activeRoomName: 'room1',
-      activeRoomId: '1'
+      activeRoomId: 1
     };
   }
 
-   activeRoomView = (newActiveRoomId, newActiveRoomName) => {
+  activeRoomView = (newActiveRoomId, newActiveRoomName) => {
     this.setState({
       activeRoomId: newActiveRoomId,
       activeRoomName: newActiveRoomName
     });
   }
-
+  // Render RoomList
   render() {
     return (
       <div className="app">
