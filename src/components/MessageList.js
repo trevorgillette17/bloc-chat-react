@@ -5,7 +5,8 @@ class MessageList extends Component {
     super(props);
 
     this.state = {
-      messages: []
+      messages: [],
+      newMessageText: ''
     };
 
     this.messagesRef = this.props.firebase.database().ref('messages');
@@ -20,7 +21,13 @@ class MessageList extends Component {
     });
   }
 
-    createMessage(event) {
+  //Controlled Component, keep the React state as the 'single source of truth'
+  handleChange(event) {
+    this.setState({newMessageText: event.target.value});
+  }
+
+  //Create message in firebase
+  createMessage(event) {
     event.preventDefault();
     if (!this.state.newMessageText) { return }
     this.messagesRef.push({ content: this.state.newMessageText, roomId: this.props.activeRoomId, username: this.props.username, sentAt: this.props.firebase.database.ServerValue.TIMESTAMP });
@@ -40,13 +47,14 @@ class MessageList extends Component {
           <tr>
             <th>{this.props.activeRoomName}</th>
           </tr>
+
         </thead>
           {
             this.state.messages.filter( message => message.roomId === this.props.activeRoomId ).map( (message, index) =>
             <tbody>
               <tr key={index}>
                 <td className="username">{message.username}</td>
-                <td className="timestamp">{message.sentAt}</td>
+                <td className="timestamp">{this.props.formatTime(message.sentAt)}</td>
               </tr>
               <tr className="message" key={index}>
                 <td>{message.content}</td>
@@ -54,7 +62,7 @@ class MessageList extends Component {
             </tbody>
             )
           }
-                    <tfoot>
+          <tfoot>
             <tr>
               <td>
                 <form onSubmit={ (e) => this.createMessage(e)}>
