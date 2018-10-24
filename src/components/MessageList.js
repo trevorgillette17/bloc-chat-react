@@ -20,6 +20,13 @@ class MessageList extends Component {
     });
   }
 
+    createMessage(event) {
+    event.preventDefault();
+    if (!this.state.newMessageText) { return }
+    this.messagesRef.push({ content: this.state.newMessageText, roomId: this.props.activeRoomId, username: this.props.username, sentAt: this.props.firebase.database.ServerValue.TIMESTAMP });
+    this.setState({ newMessageText: '' });
+  }
+
   //Create message table with header
   //Filter messages using database UID then map them to table rows
   render() {
@@ -47,6 +54,16 @@ class MessageList extends Component {
             </tbody>
             )
           }
+                    <tfoot>
+            <tr>
+              <td>
+                <form onSubmit={ (e) => this.createMessage(e)}>
+                  <input type="textarea" placeholder="New Message" value={this.state.newMessageText} onChange={ (e) => this.handleChange(e) } />
+                  <input type="submit" value="Send" />
+                </form>
+              </td>
+            </tr>
+          </tfoot>
       </table>
     );
   }
