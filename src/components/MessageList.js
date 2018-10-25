@@ -5,7 +5,8 @@ class MessageList extends Component {
     super(props);
 
     this.state = {
-      messages: []
+      messages: [],
+      newMessageText: ''
     };
 
     this.messagesRef = this.props.firebase.database().ref('messages');
@@ -18,6 +19,19 @@ class MessageList extends Component {
       message.key = snapshot.key;
       this.setState({ messages: this.state.messages.concat( message ) });
     });
+  }
+
+  //Controlled Component, keep the React state as the 'single source of truth'
+  handleChange(event) {
+    this.setState({newMessageText: event.target.value});
+  }
+
+  //Create message in firebase
+  createMessage(event) {
+    event.preventDefault();
+    if (!this.state.newMessageText) { return }
+    this.messagesRef.push({ content: this.state.newMessageText, roomId: this.props.activeRoomId, username: this.props.username, sentAt: this.props.firebase.database.ServerValue.TIMESTAMP });
+    this.setState({ newMessageText: '' });
   }
 
   //Create message table with header
@@ -33,20 +47,31 @@ class MessageList extends Component {
           <tr>
             <th>{this.props.activeRoomName}</th>
           </tr>
+
         </thead>
           {
             this.state.messages.filter( message => message.roomId === this.props.activeRoomId ).map( (message, index) =>
-            <tbody>
-              <tr key={index}>
+            <tbody key={message.sentAt}>
+              <tr key={message.sentAt}>
                 <td className="username">{message.username}</td>
-                <td className="timestamp">{message.sentAt}</td>
+                <td className="timestamp">{this.props.formatTime(message.sentAt)}</td>
               </tr>
-              <tr className="message" key={index}>
+              <tr className="message" key={message.key}>
                 <td>{message.content}</td>
               </tr>
             </tbody>
             )
           }
+          <tfoot>
+            <tr>
+              <td>
+                <form onSubmit={ (e) => this.createMessage(e)}>
+                  <input type="textarea" placeholder="New Message" value={this.state.newMessageText} onChange={ (e) => this.handleChange(e) } />
+                  <input type="submit" value="Send" />
+                </form>
+              </td>
+            </tr>
+          </tfoot>
       </table>
     );
   }

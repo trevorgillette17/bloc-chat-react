@@ -55,8 +55,8 @@ class RoomList extends Component {
         </colgroup>
         <tbody>
           {
-            this.state.rooms.map( (room, index) =>
-              <tr className="room" key={index} onClick= { (e) => this.handleClick(e) }>
+            this.state.rooms.map( (room) =>
+              <tr className="room" key={room.key} onClick= { (e) => this.handleClick(e) }>
                 <td>{room.name}</td>
               </tr>
             )
